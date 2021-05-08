@@ -59,9 +59,81 @@ void setup()
 
     // append text message to file when endpoint is called
     server.on("/sendText", HTTP_POST, [](AsyncWebServerRequest *request) {
-        // append text to file
+        int params_count = request->params();
+
+        char *name = NULL;
+        char *text = NULL;
+
+        for (int i = 0; i < params_count; i++)
+        {
+            AsyncWebParameter *p = request->getParam(i);
+
+            char *paramName = (char *)p->name().c_str();
+            char *paramValue = (char *)p->value().c_str();
+
+            // replace some characters
+            for (int i = 0; i < strlen(paramValue); i++)
+            {
+                // replace pipe with /
+                if (paramValue[i] == '|')
+                {
+                    paramValue[i] = '/';
+                }
+            }
+
+            // filter out input with only spaces
+            bool onlySpaces = true;
+            for (int i = 0; i < strlen(paramValue); i++)
+            {
+                if (paramValue[i] != ' ')
+                {
+                    onlySpaces = false;
+                    break;
+                }
+            }
+
+            if (onlySpaces)
+            {
+                Serial.print("Stopping because of only spaces\n");
+                return;
+            }
+
+            if (strcmp(paramName, "nickname") == 0 && strlen(paramValue) > 0)
+            {
+                name = paramValue;
+            }
+            else if (strcmp(paramName, "text") == 0 && strlen(paramValue) > 0)
+            {
+                text = paramValue;
+            }
+        }
+
+        if (name == NULL)
+        {
+            // default nickname is 'anon'
+            name = (char *)"anon";
+        }
+
+        if (text == NULL)
+        {
+            // illegal input -> return
+            Serial.print("Stopping because of no text input.\n");
+            return;
+        }
+
+        // allocate memory for new string
+        // breaks down into:
+        // - size of both strings
+        // - 3 extra characters
+        // - 1 for null-byte '\0' at the end
+        char *resultString = (char *)malloc(strlen(name) + strlen(text) + 4);
+
+        // combine strings
+        sprintf(resultString, "%s: %s|", name, text);
+
+        // append string to file
         f = LittleFS.open("/messages.txt", "a");
-        f.write("name: text;");
+        f.write(resultString, strlen(resultString));
         f.close();
 
         //redirect to index.html
