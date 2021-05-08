@@ -35,7 +35,7 @@ void setup()
     EEPROM.begin(4096);
     LittleFS.begin();
 
-    // add mdns
+    // add mdns (http://chat.local/)
     MDNS.addService("http", "tcp", 80);
     MDNS.begin("chat");
 
