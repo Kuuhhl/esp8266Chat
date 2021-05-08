@@ -47,7 +47,7 @@ void setup()
     f = LittleFS.open("/messages.txt", "w");
     f.close();
 
-    // route traffic to index.html
+    // route traffic to index.html file
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(LittleFS, "/index.html", "text/html");
     });
@@ -57,7 +57,12 @@ void setup()
         request->send(LittleFS, "/styles.css", "text/css");
     });
 
-    // append text message to file when endpoint is called
+    // route to /scripts.js file
+    server.on("/scripts.js", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->send(LittleFS, "/scripts.js", "text/js");
+    });
+
+    // route to send text
     server.on("/sendText", HTTP_POST, [](AsyncWebServerRequest *request) {
         int params_count = request->params();
 
@@ -72,7 +77,7 @@ void setup()
             char *paramValue = (char *)p->value().c_str();
 
             // replace some characters
-            for (int i = 0; i < strlen(paramValue); i++)
+            for (unsigned int i = 0; i < strlen(paramValue); i++)
             {
                 // replace pipe with /
                 if (paramValue[i] == '|')
@@ -89,7 +94,7 @@ void setup()
                 onlySpaces = false;
             }
 
-            for (int i = 0; i < strlen(paramValue); i++)
+            for (unsigned int i = 0; i < strlen(paramValue); i++)
             {
                 if (paramValue[i] != ' ')
                 {
@@ -140,19 +145,19 @@ void setup()
         request->redirect("/");
     });
 
-    // show messages file content when /showText is called
+    // route to show message-file contents
     server.on("/showText", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(LittleFS, "/messages.txt", "text/html");
     });
 
-    // when /clear is called, delete file contents and redirect to /index.html
+    // route to clear message-file
     server.on("/clear", HTTP_GET, [](AsyncWebServerRequest *request) {
         f = LittleFS.open("/messages.txt", "w");
         f.close();
         request->redirect("/");
     });
 
-    // route rest of traffic to index.html (triggers captive portal popup)
+    // route rest of traffic to index (triggers captive portal popup)
     server.onNotFound([](AsyncWebServerRequest *request) {
         request->redirect("/");
     });
