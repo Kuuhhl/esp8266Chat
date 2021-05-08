@@ -1,0 +1,44 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Chat Server</title>
+    <script>
+        function changeChatText(text) {
+            // split text into individual messages
+            text = text.split(";")
+            // load table
+            let ul = document.getElementById('chat')
+            // clear all messages
+            ul.innerHTML = "";
+            // add messages one by one
+            for (i = 0; i < text.length - 1; i++) {
+                let li = document.createElement('li')
+                li.appendChild(document.createTextNode(text[i]))
+                ul.appendChild(li)
+            }
+        }
+
+        setInterval(function getChat() {
+            fetch(`/showText`)
+                .then(function(response) {
+                    response.text().then(function(text) {
+                        changeChatText(text);
+                    });
+                });
+
+        }, 1000)
+    </script>
+</head>
+
+<body>
+    <strong>Chat</strong>
+    <ul id="chat">
+    </ul>
+    <form action="sendText" method="post">
+        <label for="nickname">Nickname</label>
+        <input name="nickname" id="nickname" type="text" placeholder="anon"></input>
+        <label for="text">Text</label>
+        <textarea id="text" name="text" cols=35 rows="4" required="required"></textarea>
+        <input type="submit" value="Send message">
+    </form>    
+</body>
