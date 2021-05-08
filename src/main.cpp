@@ -81,8 +81,14 @@ void setup()
                 }
             }
 
-            // filter out input with only spaces
+            // test if input only has spaces
             bool onlySpaces = true;
+
+            if (strlen(paramValue) == 0)
+            {
+                onlySpaces = false;
+            }
+
             for (int i = 0; i < strlen(paramValue); i++)
             {
                 if (paramValue[i] != ' ')
@@ -92,17 +98,11 @@ void setup()
                 }
             }
 
-            if (onlySpaces)
-            {
-                Serial.print("Stopping because of only spaces\n");
-                return;
-            }
-
-            if (strcmp(paramName, "nickname") == 0 && strlen(paramValue) > 0)
+            if (strcmp(paramName, "nickname") == 0 && strlen(paramValue) > 0 && !onlySpaces)
             {
                 name = paramValue;
             }
-            else if (strcmp(paramName, "text") == 0 && strlen(paramValue) > 0)
+            else if (strcmp(paramName, "text") == 0 && strlen(paramValue) > 0 && !onlySpaces)
             {
                 text = paramValue;
             }
@@ -116,8 +116,8 @@ void setup()
 
         if (text == NULL)
         {
-            // illegal input -> return
-            Serial.print("Stopping because of no text input.\n");
+            // illegal input -> abort
+            request->redirect("/");
             return;
         }
 
@@ -137,7 +137,7 @@ void setup()
         f.close();
 
         //redirect to index.html
-        request->send(LittleFS, "/index.html", "text/html");
+        request->redirect("/");
     });
 
     // show messages file content when /showText is called
@@ -149,12 +149,12 @@ void setup()
     server.on("/clear", HTTP_GET, [](AsyncWebServerRequest *request) {
         f = LittleFS.open("/messages.txt", "w");
         f.close();
-        request->send(LittleFS, "/index.html", "text/html");
+        request->redirect("/");
     });
 
     // route rest of traffic to index.html (triggers captive portal popup)
     server.onNotFound([](AsyncWebServerRequest *request) {
-        request->send(LittleFS, "/index.html", "text/html");
+        request->redirect("/");
     });
 
     // start the webserver
