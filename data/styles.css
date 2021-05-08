@@ -1,0 +1,46 @@
+:root {
+	margin-left: 15px;
+	margin-right: 15px;
+}
+* {
+	font-family: sans-serif;
+	background-color: #282828;
+	color: #ebdbb2;
+}
+h1 {
+	font-size: 30px;
+	text-align: center;
+}
+
+label {
+	font-size: 15px;
+	text-align: center;
+	margin-top: 15px;
+	margin-bottom: 15px;
+    padding: 5px;
+	background-color: #3c3836;
+}
+li {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	background-color: #3c3836;
+}
+ul {
+	list-style: none;
+    padding-left: 0;
+}
+form {
+	display: grid;
+}
+#nickname {
+	text-align: center;
+}
+#disclaimer {
+	text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px: 
+}
+input[type='submit'] {
+    margin-top: 15px;
+    padding: 10px;
+}

@@ -1,6 +1,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="/styles.css">
     <title>Chat Server</title>
     <script>
         function changeChatText(text) {
@@ -10,6 +11,18 @@
             let ul = document.getElementById('chat')
             // clear all messages
             ul.innerHTML = "";
+
+            // set message if no text / hide message if there is 
+            let disclaimer = document.getElementById("disclaimer");
+            if (text.length -1 == 0)
+            {
+                disclaimer.style.display = "";
+                disclaimer.textContent = "Be the first one to leave a message :)";
+                return;
+            }
+            else {
+                disclaimer.style.display = "none";
+            }
             // add messages one by one
             for (i = 0; i < text.length - 1; i++) {
                 let li = document.createElement('li')
@@ -31,9 +44,11 @@
 </head>
 
 <body>
-    <strong>Chat</strong>
+    <h1>Chat</h1>
+    <p id="disclaimer">loading messages...</p>
     <ul id="chat">
     </ul>
+    <h1>Post Message</h1>
     <form action="sendText" method="post">
         <label for="nickname">Nickname</label>
         <input name="nickname" id="nickname" type="text" placeholder="anon"></input>
