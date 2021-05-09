@@ -43,8 +43,8 @@ void setup()
     dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
     dnsServer.start(53, "*", WiFi.softAPIP());
 
-    // create empty file for text messages
-    f = LittleFS.open("/messages.txt", "w");
+    // create file for text messages if it doesn't exist yet
+    f = LittleFS.open("/messages.txt", "a");
     f.close();
 
     // route traffic to index.html file
@@ -80,6 +80,9 @@ void setup()
             for (unsigned int i = 0; i < strlen(paramValue); i++)
             {
                 // replace pipe with /
+                // because we use pipe as separator between messages.
+                // if anyone used the pipe symbol in their messages, it would
+                // mess up everything.
                 if (paramValue[i] == '|')
                 {
                     paramValue[i] = '/';
