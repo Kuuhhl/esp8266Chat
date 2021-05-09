@@ -26,5 +26,6 @@
 * `/scripts.js` js scripts for the landing page.
 * `/sendText` POST endpoint to send a new message. Parameters: `nickname`, `text`.
 * `/showText` content of messages.txt file.
+* `/lastWrite` timestamp of last write.
 * `/clear` clear all messages.
 
