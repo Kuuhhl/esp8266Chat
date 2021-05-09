@@ -23,11 +23,33 @@ function changeChatText(text) {
 	}
 }
 
-// update chat every second
-setInterval(function getChat() {
+// get message file contents and call changeChatText
+function getText() {
 	fetch(`/showText`).then(function (response) {
 		response.text().then(function (text) {
 			changeChatText(text)
 		})
 	})
-}, 1000)
+}
+
+// initialize global cache variable.
+// we need this to compare write times of the message file
+var cache = ''
+
+// get last time chat was written to and syncronize if necessary.
+// executed every second
+function sync() {
+	setInterval(function getLastWrite() {
+		fetch(`/lastWrite`).then(function (response) {
+			response.text().then(function (text) {
+				if (cache !== text) {
+					cache = text
+					getText()
+				}
+			})
+		})
+	}, 1000)
+}
+
+// start syncing on page load
+window.onload = sync()

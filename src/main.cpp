@@ -7,11 +7,9 @@
 #include <EEPROM.h>
 #include <DNSServer.h>
 
-#define BAUD_RATE 9600
-
-/* ============= CHANGE WIFI CREDENTIALS ============= */
+/* ============= CHANGE WIFI SSID ============= */
 const char *ssid = "Chat Server";
-/* ============= ======================= ============= */
+/* ============= ================ ============= */
 
 DNSServer dnsServer;
 AsyncWebServer server(80);
@@ -20,8 +18,6 @@ File f;
 
 void setup()
 {
-    Serial.begin(BAUD_RATE);
-
     // configure IP and netmask
     IPAddress apIP(192, 168, 0, 1);
     IPAddress netMask(255, 255, 255, 0);
@@ -151,6 +147,24 @@ void setup()
     // route to show message-file contents
     server.on("/showText", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(LittleFS, "/messages.txt", "text/html");
+    });
+
+    // route to show timestamp of last write
+    server.on("/lastWrite", HTTP_GET, [](AsyncWebServerRequest *request) {
+        // open file
+        f = LittleFS.open("/messages.txt", "r");
+
+        // get last write time
+        time_t lastWriteTime = f.getLastWrite();
+
+        // convert to string
+        char *lastWriteString = ctime(&lastWriteTime);
+
+        // close file
+        f.close();
+
+        // send response
+        request->send(200, "text/plain", lastWriteString);
     });
 
     // route to clear message-file
